@@ -1,8 +1,7 @@
-{% extends "base.html" %}
-
-{% block content %}
+<!doctype html>
+<html lang="en">
 <head>
-    <title>Chess Board HTML5</title>
+    <title>Игра</title>
     <meta charset="UTF-8">
     <style>
    .body { background-color: #eeeeee; }
@@ -20,126 +19,48 @@
     background: #f0d9b5;
    }
 
+
+
+
     </style>
 </head>
+<body>
 <h1>Игра</h1>
 <form action="" method="post">
-    <p>{{ doska }}</p>
     <p>Вы >> {{ name }}</p>
+    <p>Противник >> {{ opponent }}</p>
     <p>Ссылка на игру >> <a href="{{ hreff }}">{{ hreff }}</a></p>
-    <p>Первый игрок(создатель игры) >> {{ first_name }}</p>
-    <p>Второй игрок >> {{ second_name }} </p>
-    <p>Состояние игры >> {{ msg_state }}</p>
-    <p>Ходят >> {{ msg_move }}</p>
+
+
+    <script>
+    async function repeatData() {
+        let url = location.pathname + '/' + 'reload_data';
+        let response = await fetch(url);
+
+        let info = await response.json();
+
+        document.getElementById('state').innerHTML = ('Состояние игры >> ' + info['state']);
+        document.getElementById('move').innerHTML = ('Чей ход >> ' + info['move']);
+        document.getElementById('doska2').innerHTML = (info["doska"]);
+
+
+        let html = '<tr><th>8</th>' + '<td id="a8"><img src="/static/images/' + info["doska"][0] + '.jpg" width="100" height="100"></td>' + '<td id="b8"><img src="/static/images/' + info["doska"][1] + '.jpg" width="100" height="100"></td>' + '<td id="c8"><img src="/static/images/' + info["doska"][2] + '.jpg" width="100" height="100"></td>' + '<td id="d8"><img src="/static/images/' + info["doska"][3] + '.jpg" width="100" height="100"></td>' + '<td id="e8"><img src="/static/images/' + info["doska"][4] + '.jpg" width="100" height="100"></td>' + '<td id="f8"><img src="/static/images/' + info["doska"][5] + '.jpg" width="100" height="100"></td>' + '<td id="g8"><img src="/static/images/' + info["doska"][6] + '.jpg" width="100" height="100"></td>' + '<td id="h8"><img src="/static/images/' + info["doska"][7] + '.jpg" width="100" height="100"></td>' + '</tr>' + '<tr><th>7</th>' + '<td id="a7"><img src="/static/images/' + info["doska"][8] + '.jpg" width="100" height="100"></td>' + '<td id="b7"><img src="/static/images/' + info["doska"][9] + '.jpg" width="100" height="100"></td>' + '<td id="c7"><img src="/static/images/' + info["doska"][10] + '.jpg" width="100" height="100"></td>' + '<td id="d7"><img src="/static/images/' + info["doska"][11] + '.jpg" width="100" height="100"></td>' + '<td id="e7"><img src="/static/images/' + info["doska"][12] + '.jpg" width="100" height="100"></td>' + '<td id="f7"><img src="/static/images/' + info["doska"][13] + '.jpg" width="100" height="100"></td>' + '<td id="g7"><img src="/static/images/' + info["doska"][14] + '.jpg" width="100" height="100"></td>' + '<td id="h7"><img src="/static/images/' + info["doska"][15] + '.jpg" width="100" height="100"></td>' + '</tr>' + '<tr><th>6</th>' + '<td id="a6"><img src="/static/images/' + info["doska"][16] + '.jpg" width="100" height="100"></td>' + '<td id="b6"><img src="/static/images/' + info["doska"][17] + '.jpg" width="100" height="100"></td>' + '<td id="c6"><img src="/static/images/' + info["doska"][18] + '.jpg" width="100" height="100"></td>' + '<td id="d6"><img src="/static/images/' + info["doska"][19] + '.jpg" width="100" height="100"></td>' + '<td id="e6"><img src="/static/images/' + info["doska"][20] + '.jpg" width="100" height="100"></td>' + '<td id="f6"><img src="/static/images/' + info["doska"][21] + '.jpg" width="100" height="100"></td>' + '<td id="g6"><img src="/static/images/' + info["doska"][22] + '.jpg" width="100" height="100"></td>' + '<td id="h6"><img src="/static/images/' + info["doska"][23] + '.jpg" width="100" height="100"></td>' + '</tr>' + '<tr><th>5</th>' + '<td id="a5"><img src="/static/images/' + info["doska"][24] + '.jpg" width="100" height="100"></td>' + '<td id="b5"><img src="/static/images/' + info["doska"][25] + '.jpg" width="100" height="100"></td>' + '<td id="c5"><img src="/static/images/' + info["doska"][26] + '.jpg" width="100" height="100"></td>' + '<td id="d5"><img src="/static/images/' + info["doska"][27] + '.jpg" width="100" height="100"></td>' + '<td id="e5"><img src="/static/images/' + info["doska"][28] + '.jpg" width="100" height="100"></td>' + '<td id="f5"><img src="/static/images/' + info["doska"][29] + '.jpg" width="100" height="100"></td>' + '<td id="g5"><img src="/static/images/' + info["doska"][30] + '.jpg" width="100" height="100"></td>' + '<td id="h5"><img src="/static/images/' + info["doska"][31] + '.jpg" width="100" height="100"></td>' + '</tr>' + '<tr><th>4</th>' + '<td id="a4"><img src="/static/images/' + info["doska"][32] + '.jpg" width="100" height="100"></td>' + '<td id="b4"><img src="/static/images/' + info["doska"][33] + '.jpg" width="100" height="100"></td>' + '<td id="c4"><img src="/static/images/' + info["doska"][34] + '.jpg" width="100" height="100"></td>' + '<td id="d4"><img src="/static/images/' + info["doska"][35] + '.jpg" width="100" height="100"></td>' + '<td id="e4"><img src="/static/images/' + info["doska"][36] + '.jpg" width="100" height="100"></td>' + '<td id="f4"><img src="/static/images/' + info["doska"][37] + '.jpg" width="100" height="100"></td>' + '<td id="g4"><img src="/static/images/' + info["doska"][38] + '.jpg" width="100" height="100"></td>' + '<td id="h4"><img src="/static/images/' + info["doska"][39] + '.jpg" width="100" height="100"></td>' + '</tr>' + '<tr><th>3</th>' + '<td id="a3"><img src="/static/images/' + info["doska"][40] + '.jpg" width="100" height="100"></td>' + '<td id="b3"><img src="/static/images/' + info["doska"][41] + '.jpg" width="100" height="100"></td>' + '<td id="c3"><img src="/static/images/' + info["doska"][42] + '.jpg" width="100" height="100"></td>' + '<td id="d3"><img src="/static/images/' + info["doska"][43] + '.jpg" width="100" height="100"></td>' + '<td id="e3"><img src="/static/images/' + info["doska"][44] + '.jpg" width="100" height="100"></td>' + '<td id="f3"><img src="/static/images/' + info["doska"][45] + '.jpg" width="100" height="100"></td>' + '<td id="g3"><img src="/static/images/' + info["doska"][46] + '.jpg" width="100" height="100"></td>' + '<td id="h3"><img src="/static/images/' + info["doska"][47] + '.jpg" width="100" height="100"></td>' + '</tr>' + '<tr><th>2</th>' + '<td id="a2"><img src="/static/images/' + info["doska"][48] + '.jpg" width="100" height="100"></td>' + '<td id="b2"><img src="/static/images/' + info["doska"][49] + '.jpg" width="100" height="100"></td>' + '<td id="c2"><img src="/static/images/' + info["doska"][50] + '.jpg" width="100" height="100"></td>' + '<td id="d2"><img src="/static/images/' + info["doska"][51] + '.jpg" width="100" height="100"></td>' + '<td id="e2"><img src="/static/images/' + info["doska"][52] + '.jpg" width="100" height="100"></td>' + '<td id="f2"><img src="/static/images/' + info["doska"][53] + '.jpg" width="100" height="100"></td>' + '<td id="g2"><img src="/static/images/' + info["doska"][54] + '.jpg" width="100" height="100"></td>' + '<td id="h2"><img src="/static/images/' + info["doska"][55] + '.jpg" width="100" height="100"></td>' + '</tr>' + '<tr><th>1</th>' + '<td id="a1"><img src="/static/images/' + info["doska"][56] + '.jpg" width="100" height="100"></td>' + '<td id="b1"><img src="/static/images/' + info["doska"][57] + '.jpg" width="100" height="100"></td>' + '<td id="c1"><img src="/static/images/' + info["doska"][58] + '.jpg" width="100" height="100"></td>' + '<td id="d1"><img src="/static/images/' + info["doska"][59] + '.jpg" width="100" height="100"></td>' + '<td id="e1"><img src="/static/images/' + info["doska"][60] + '.jpg" width="100" height="100"></td>' + '<td id="f1"><img src="/static/images/' + info["doska"][61] + '.jpg" width="100" height="100"></td>' + '<td id="g1"><img src="/static/images/' + info["doska"][62] + '.jpg" width="100" height="100"></td>' + '<td id="h1"><img src="/static/images/' + info["doska"][63] + '.jpg" width="100" height="100"></td>' + '</tr>' + '<tr><th></th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th><th>h</th></tr>';
+        document.getElementById('doska').innerHTML = (html);
+    }
+
+    setInterval(repeatData, 1000);
+
+
+    </script>
+    <p id="state"></p>
+    <p id="move"></p>
+    <p id="doska2"></p>
     <div class="box">
         <div class="centered">
-
-            <table class="chess-board">
-                <tbody>
-                <tr>
-                    <th>8</th>
-                    <td id="a8"><img src="/static/images/{{ doska[0] }}.jpg" width="100" height="100"></td>
-                    <td id="b8"><img src="/static/images/{{ doska[1] }}.jpg" width="100" height="100"></td>
-                    <td id="c8"><img src="/static/images/{{ doska[2] }}.jpg" width="100" height="100"></td>
-                    <td id="d8"><img src="/static/images/{{ doska[3] }}.jpg" width="100" height="100"></td>
-                    <td id="e8"><img src="/static/images/{{ doska[4] }}.jpg" width="100" height="100"></td>
-                    <td id="f8"><img src="/static/images/{{ doska[5] }}.jpg" width="100" height="100"></td>
-                    <td id="g8"><img src="/static/images/{{ doska[6] }}.jpg" width="100" height="100"></td>
-                    <td id="h8"><img src="/static/images/{{ doska[7] }}.jpg" width="100" height="100"></td>
-                </tr>
-                <tr>
-                    <th>7</th>
-                    <td id="a7"><img src="/static/images/{{ doska[8] }}.jpg" width="100" height="100"></td>
-                    <td id="b7"><img src="/static/images/{{ doska[9] }}.jpg" width="100" height="100"></td>
-                    <td id="c7"><img src="/static/images/{{ doska[10] }}.jpg" width="100" height="100"></td>
-                    <td id="d7"><img src="/static/images/{{ doska[11] }}.jpg" width="100" height="100"></td>
-                    <td id="e7"><img src="/static/images/{{ doska[12] }}.jpg" width="100" height="100"></td>
-                    <td id="f7"><img src="/static/images/{{ doska[13] }}.jpg" width="100" height="100"></td>
-                    <td id="g7"><img src="/static/images/{{ doska[14] }}.jpg" width="100" height="100"></td>
-                    <td id="h7"><img src="/static/images/{{ doska[15] }}.jpg" width="100" height="100"></td>
-                </tr>
-                <tr>
-                    <th>6</th>
-                    <td id="a6"><img src="/static/images/{{ doska[16] }}.jpg" width="100" height="100"></td>
-                    <td id="b6"><img src="/static/images/{{ doska[17] }}.jpg" width="100" height="100"></td>
-                    <td id="c6"><img src="/static/images/{{ doska[18] }}.jpg" width="100" height="100"></td>
-                    <td id="d6"><img src="/static/images/{{ doska[19] }}.jpg" width="100" height="100"></td>
-                    <td id="e6"><img src="/static/images/{{ doska[20] }}.jpg" width="100" height="100"></td>
-                    <td id="f6"><img src="/static/images/{{ doska[21] }}.jpg" width="100" height="100"></td>
-                    <td id="g6"><img src="/static/images/{{ doska[22] }}.jpg" width="100" height="100"></td>
-                    <td id="h6"><img src="/static/images/{{ doska[23] }}.jpg" width="100" height="100"></td>
-                </tr>
-                <tr>
-                    <th>5</th>
-                    <td id="a5"><img src="/static/images/{{ doska[24] }}.jpg" width="100" height="100"></td>
-                    <td id="b5"><img src="/static/images/{{ doska[25] }}.jpg" width="100" height="100"></td>
-                    <td id="c5"><img src="/static/images/{{ doska[26] }}.jpg" width="100" height="100"></td>
-                    <td id="d5"><img src="/static/images/{{ doska[27] }}.jpg" width="100" height="100"></td>
-                    <td id="e5"><img src="/static/images/{{ doska[28] }}.jpg" width="100" height="100"></td>
-                    <td id="f5"><img src="/static/images/{{ doska[29] }}.jpg" width="100" height="100"></td>
-                    <td id="g5"><img src="/static/images/{{ doska[30] }}.jpg" width="100" height="100"></td>
-                    <td id="h5"><img src="/static/images/{{ doska[31] }}.jpg" width="100" height="100"></td>
-                </tr>
-                <tr>
-                    <th>4</th>
-                    <td id="a4"><img src="/static/images/{{ doska[32] }}.jpg" width="100" height="100"></td>
-                    <td id="b4"><img src="/static/images/{{ doska[33] }}.jpg" width="100" height="100"></td>
-                    <td id="c4"><img src="/static/images/{{ doska[34] }}.jpg" width="100" height="100"></td>
-                    <td id="d4"><img src="/static/images/{{ doska[35] }}.jpg" width="100" height="100"></td>
-                    <td id="e4"><img src="/static/images/{{ doska[36] }}.jpg" width="100" height="100"></td>
-                    <td id="f4"><img src="/static/images/{{ doska[37] }}.jpg" width="100" height="100"></td>
-                    <td id="g4"><img src="/static/images/{{ doska[38] }}.jpg" width="100" height="100"></td>
-                    <td id="h4"><img src="/static/images/{{ doska[39] }}.jpg" width="100" height="100"></td>
-                </tr>
-                <tr>
-                    <th>3</th>
-                    <td id="a3"><img src="/static/images/{{ doska[40] }}.jpg" width="100" height="100"></td>
-                    <td id="b3"><img src="/static/images/{{ doska[41] }}.jpg" width="100" height="100"></td>
-                    <td id="c3"><img src="/static/images/{{ doska[42] }}.jpg" width="100" height="100"></td>
-                    <td id="d3"><img src="/static/images/{{ doska[43] }}.jpg" width="100" height="100"></td>
-                    <td id="e3"><img src="/static/images/{{ doska[44] }}.jpg" width="100" height="100"></td>
-                    <td id="f3"><img src="/static/images/{{ doska[45] }}.jpg" width="100" height="100"></td>
-                    <td id="g3"><img src="/static/images/{{ doska[46] }}.jpg" width="100" height="100"></td>
-                    <td id="h3"><img src="/static/images/{{ doska[47] }}.jpg" width="100" height="100"></td>
-                </tr>
-                <tr>
-                    <th>2</th>
-                    <td id="a2"><img src="/static/images/{{ doska[48] }}.jpg" width="100" height="100"></td>
-                    <td id="b2"><img src="/static/images/{{ doska[49] }}.jpg" width="100" height="100"></td>
-                    <td id="c2"><img src="/static/images/{{ doska[50] }}.jpg" width="100" height="100"></td>
-                    <td id="d2"><img src="/static/images/{{ doska[51] }}.jpg" width="100" height="100"></td>
-                    <td id="e2"><img src="/static/images/{{ doska[52] }}.jpg" width="100" height="100"></td>
-                    <td id="f2"><img src="/static/images/{{ doska[53] }}.jpg" width="100" height="100"></td>
-                    <td id="g2"><img src="/static/images/{{ doska[54] }}.jpg" width="100" height="100"></td>
-                    <td id="h2"><img src="/static/images/{{ doska[55] }}.jpg" width="100" height="100"></td>
-                </tr>
-                <tr>
-                    <th>1</th>
-                    <td id="a1"><img src="/static/images/{{ doska[56] }}.jpg" width="100" height="100"></td>
-                    <td id="b1"><img src="/static/images/{{ doska[57] }}.jpg" width="100" height="100"></td>
-                    <td id="c1"><img src="/static/images/{{ doska[58] }}.jpg" width="100" height="100"></td>
-                    <td id="d1"><img src="/static/images/{{ doska[59] }}.jpg" width="100" height="100"></td>
-                    <td id="e1"><img src="/static/images/{{ doska[60] }}.jpg" width="100" height="100"></td>
-                    <td id="f1"><img src="/static/images/{{ doska[61] }}.jpg" width="100" height="100"></td>
-                    <td id="g1"><img src="/static/images/{{ doska[62] }}.jpg" width="100" height="100"></td>
-                    <td id="h1"><img src="/static/images/{{ doska[63] }}.jpg" width="100" height="100"></td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <th>a</th>
-                    <th>b</th>
-                    <th>c</th>
-                    <th>d</th>
-                    <th>e</th>
-                    <th>f</th>
-                    <th>g</th>
-                    <th>h</th>
-                </tr>
-                </tbody>
-            </table>
-
+            <table id="doska" class="chess-board"></table>
         </div>
     </div>
+
 
     {{ form.hidden_tag() }}
     <p>
@@ -162,4 +83,7 @@
     </p>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
 </form>
-{% endblock %}
+</body>
+</html>
+
+

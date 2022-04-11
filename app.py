@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Flask, render_template, session
+from flask import Flask, render_template, session, jsonify
 from flask_login import login_user, logout_user, login_required, LoginManager
 from werkzeug.utils import redirect
 
@@ -96,6 +96,8 @@ def lobby():
     form = CreateLobby()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
+
+        # создание новой игры(внесением её в БД)
         game = Game(
             uuid=str(uuid.uuid4()),
             first_name=session.get("name", None),
@@ -117,7 +119,7 @@ def lobby():
 
 @app.route("/game/<gen_uuid>", methods=['GET', 'POST'])
 @login_required
-def game(gen_uuid):
+def game(gen_uuid):  # принимает форму хода
     form = MoveForm()
 
     db_sess = db_session.create_session()
@@ -184,45 +186,60 @@ def game(gen_uuid):
                             doska[vertical_here * 8 + gorizont_here] = "_"
 
                 result.doska = ",".join(doska)
-                if result.move is True:
+
+                if result.move is True:  # меняет чей сейчас ход
                     result.move = False
                 else:
                     result.move = True
 
-        if result.doska.count("g") == 1 and result.state is None:
+        if result.doska.count("g") == 1 and result.state is None:  # если кто то проиграл
             if result.doska.count("gW"):
                 result.state = True
             else:
                 result.state = False
 
-        elif result.first_name != session.get("name", None) and result.second_name == "":
+        elif result.first_name != session.get("name", None) and result.second_name == "":  # присоединился второй игрок
             result.second_name = session.get("name", None)
 
         db_sess.commit()
 
-        result = db_sess.query(Game).filter(Game.uuid == gen_uuid).first()
-
-        msg_state = "Игра идет"
-        if result.state is True:
-            msg_state = "Белые выиграли"
-        elif result.state is False:
-            msg_state = "Черные выиграли"
-
-        if result.move is True:
-            msg_move = "Ход белых"
-        else:
-            msg_move = "Ход черных"
+        name = session.get("name", None)
+        opponent = result.first_name
+        if name == result.first_name:
+            opponent = result.second_name
 
         return render_template("game.html",
-                               name=session.get("name", None),
-                               hreff=f"/game/{result.uuid}",
-                               first_name=result.first_name,
-                               second_name=result.second_name,
                                form=form,
-                               doska=result.doska.split(","),
-                               msg_state=msg_state,
-                               msg_move=msg_move)
+                               name=name,
+                               hreff=f"/game/{result.uuid}",
+                               opponent=opponent,
+                               )
     return "Такой игры нет"
+
+
+@app.route("/game/<gen_uuid>/reload_data", methods=['GET', 'POST'])
+@login_required
+def game_reload_data(gen_uuid):  # будет обновлять местоположение фигур. --> json
+    db_sess = db_session.create_session()
+    result = db_sess.query(Game).filter(Game.uuid == gen_uuid).first()
+
+    msg_state = "Игра идет"
+    if result.state is True:
+        msg_state = "Белые выиграли"
+    elif result.state is False:
+        msg_state = "Черные выиграли"
+
+    if result.move is True:
+        msg_move = "Ход белых"
+    else:
+        msg_move = "Ход черных"
+
+    print(result.doska.split(","))
+    json_return = {"doska": result.doska.split(","),
+                   "state": msg_state,
+                   "move": msg_move}
+
+    return jsonify(json_return)
 
 
 @app.route("/statistics", methods=['GET', 'POST'])
@@ -231,17 +248,22 @@ def statistics():
     username = session.get("name", None)
 
     count = 0
+    count_win = 0
 
     db_sess = db_session.create_session()
     result = db_sess.query(Game).filter((Game.first_name == username) | (Game.second_name == username)).all()
 
     for res in result:
+        count += 1
         if res.first_name == username and res.state is True:
-            count += 1
+            count_win += 1
         elif res.second_name == username and res.state is False:
-            count += 1
+            count_win += 1
 
-    return f"{count}"
+    return render_template("statistic.html",
+                           count=count,
+                           count_win=count_win,
+                           )
 
 
 if __name__ == "__main__":

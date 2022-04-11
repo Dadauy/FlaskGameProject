@@ -1,6 +1,10 @@
-{% extends "base.html" %}
+<!doctype html>
+<html lang="en">
+<head>
+    <title>{{title}}</title>
+</head>
+<body>
 
-{% block content %}
 <h1>Лобби</h1>
 <form action="" method="post">
     {{ form.hidden_tag() }}
@@ -10,4 +14,5 @@
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {{message}}
 </form>
-{% endblock %}
+</body>
+</html>
