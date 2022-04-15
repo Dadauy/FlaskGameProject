@@ -234,7 +234,6 @@ def game_reload_data(gen_uuid):  # будет обновлять местопо�
     else:
         msg_move = "Ход черных"
 
-    print(result.doska.split(","))
     json_return = {"doska": result.doska.split(","),
                    "state": msg_state,
                    "move": msg_move}
