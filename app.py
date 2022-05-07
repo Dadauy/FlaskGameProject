@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from flask import Flask, render_template, session, jsonify
 from flask_login import login_user, logout_user, login_required, LoginManager
@@ -12,7 +13,7 @@ from forms.login import LoginForm
 from forms.move import MoveForm
 from forms.user import RegisterForm
 
-import uuid
+from tools.move_chess import move_chess
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "07658c9d-9db8-4bf8-9886-aaa6175d900e"
@@ -24,6 +25,7 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
+    """определяет ник человека который авторизировался"""
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
@@ -31,11 +33,13 @@ def load_user(user_id):
 @app.route('/logout')
 @login_required
 def logout():
+    """выходит из учетной записи"""
     logout_user()
     return redirect("/")
 
 
 def main():
+    """подключается к БД"""
     db_session.global_init("db/blogs.db")
     app.run()
 
@@ -47,15 +51,16 @@ def home():
 
 @app.route("/registration", methods=['GET', 'POST'])
 def registration_user():
+    """регистрирует человека(добавляет в БД)"""
     form = RegisterForm()
     if form.validate_on_submit():
-        if form.password.data != form.password_again.data:
+        if form.password.data != form.password_again.data:  # проверяет совпадают ли два пароли
             return render_template('register.html',
                                    title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
         db_sess = db_session.create_session()
-        if db_sess.query(User).filter(User.name == form.name.data).first():
+        if db_sess.query(User).filter(User.name == form.name.data).first():  # проверяет существует ли такой ник
             return render_template('register.html',
                                    title='Регистрация',
                                    form=form,
@@ -74,11 +79,12 @@ def registration_user():
 
 @app.route("/authorization", methods=['GET', 'POST'])
 def authorization_user():
+    """авторизация пользователя"""
     form = LoginForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.name == form.username.data).first()
-        if user and user.check_password(form.password.data):
+        user = db_sess.query(User).filter(User.name == form.username.data).first()  # существует ли такой ник
+        if user and user.check_password(form.password.data):  # правильный ли пароль
             login_user(user, remember=form.remember_me.data)
             session["name"] = form.username.data
             return redirect("/lobby")
@@ -93,6 +99,7 @@ def authorization_user():
 @app.route("/lobby", methods=['GET', 'POST'])
 @login_required
 def lobby():
+    """создает новую игру, и переправляет на нее"""
     form = CreateLobby()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
@@ -119,16 +126,18 @@ def lobby():
 
 @app.route("/game/<gen_uuid>", methods=['GET', 'POST'])
 @login_required
-def game(gen_uuid):  # принимает форму хода
-    form = MoveForm()
+def game(gen_uuid):
+    """Определяется правильность хода, чей ход, состояние игры(кто выиграл/проиграл)"""
+    form = MoveForm()  # принимает форму хода
 
     db_sess = db_session.create_session()
     result = db_sess.query(Game).filter(Game.uuid == gen_uuid).first()
     if result.id != 0:
         if form.validate_on_submit() and result.state is None and result.doska.count("g") == 2 and \
-                result.second_name != "":
+                result.second_name != "":  # пришла форма, состояние игры - идет, два короля на доске, второй игрок есть
             if len(form.here.data) == 2 and form.here.data[0] in "abcdefgh" and form.here.data[1] in "87654321" and \
                     len(form.there.data) == 2 and form.there.data[0] in "abcdefgh" and form.there.data[1] in "87654321":
+                # правильность хода(не вышел ли за границы и т.д.)
 
                 doska = result.doska.split(",")
 
@@ -138,52 +147,8 @@ def game(gen_uuid):  # принимает форму хода
                 vertical_there = "87654321".index(form.there.data[1])
                 figure = doska[vertical_here * 8 + gorizont_here]
 
-                if figure[0] == "l":  # ладья
-                    if gorizont_here == gorizont_there or vertical_here == vertical_there:
-                        doska[vertical_there * 8 + gorizont_there] = doska[vertical_here * 8 + gorizont_here]
-                        doska[vertical_here * 8 + gorizont_here] = "_"
-
-                elif figure[0] == "k":  # конь
-                    move_variant = [(vertical_here - 2, gorizont_here + 1),
-                                    (vertical_here - 2, gorizont_here - 1),
-                                    (vertical_here - 1, gorizont_here + 2),
-                                    (vertical_here - 1, gorizont_here - 2),
-                                    (vertical_here + 1, gorizont_here + 2),
-                                    (vertical_here + 1, gorizont_here - 2),
-                                    (vertical_here + 2, gorizont_here + 1),
-                                    (vertical_here + 2, gorizont_here - 1),
-                                    ]
-                    if (vertical_there, gorizont_there) in move_variant:
-                        doska[vertical_there * 8 + gorizont_there] = doska[vertical_here * 8 + gorizont_here]
-                        doska[vertical_here * 8 + gorizont_here] = "_"
-
-                elif figure[0] == "c":  # слон
-                    if abs(vertical_there - vertical_here) == abs(gorizont_there - gorizont_here):
-                        doska[vertical_there * 8 + gorizont_there] = doska[vertical_here * 8 + gorizont_here]
-                        doska[vertical_here * 8 + gorizont_here] = "_"
-
-                elif figure[0] == "f":  # ферзь
-                    if abs(vertical_there - vertical_here) == abs(gorizont_there - gorizont_here) or \
-                            (gorizont_here == gorizont_there or vertical_here == vertical_there):
-                        doska[vertical_there * 8 + gorizont_there] = doska[vertical_here * 8 + gorizont_here]
-                        doska[vertical_here * 8 + gorizont_here] = "_"
-
-                elif figure[0] == "g":  # король
-                    if abs(vertical_there - vertical_here) == abs(gorizont_there - gorizont_here) == 1 or \
-                            (gorizont_here == gorizont_there or vertical_here == vertical_there):
-                        doska[vertical_there * 8 + gorizont_there] = doska[vertical_here * 8 + gorizont_here]
-                        doska[vertical_here * 8 + gorizont_here] = "_"
-
-                elif figure[0] == "p":  # пешка
-                    if figure[1] == "W":
-                        if vertical_there - vertical_here == 1:
-                            doska[vertical_there * 8 + gorizont_there] = doska[vertical_here * 8 + gorizont_here]
-                            doska[vertical_here * 8 + gorizont_here] = "_"
-
-                    elif figure[1] == "B":
-                        if vertical_there - vertical_here == -1:
-                            doska[vertical_there * 8 + gorizont_there] = doska[vertical_here * 8 + gorizont_here]
-                            doska[vertical_here * 8 + gorizont_here] = "_"
+                # проверяет правильность хода (если да)--> меняет местоположение фигуры
+                doska = move_chess(doska, gorizont_here, vertical_here, gorizont_there, vertical_there, figure)
 
                 result.doska = ",".join(doska)
 
@@ -223,13 +188,13 @@ def game_reload_data(gen_uuid):  # будет обновлять местопо�
     db_sess = db_session.create_session()
     result = db_sess.query(Game).filter(Game.uuid == gen_uuid).first()
 
-    msg_state = "Игра идет"
+    msg_state = "Игра идет"  # состояние игры
     if result.state is True:
         msg_state = "Белые выиграли"
     elif result.state is False:
         msg_state = "Черные выиграли"
 
-    if result.move is True:
+    if result.move is True:  # чей ход
         msg_move = "Ход белых"
     else:
         msg_move = "Ход черных"
@@ -244,10 +209,11 @@ def game_reload_data(gen_uuid):  # будет обновлять местопо�
 @app.route("/statistics", methods=['GET', 'POST'])
 @login_required
 def statistics():
+    """страница статистики"""
     username = session.get("name", None)
 
-    count = 0
-    count_win = 0
+    count = 0  # количество игр
+    count_win = 0  # количество выигранных игр
 
     db_sess = db_session.create_session()
     result = db_sess.query(Game).filter((Game.first_name == username) | (Game.second_name == username)).all()

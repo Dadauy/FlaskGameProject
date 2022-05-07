@@ -4,6 +4,7 @@ from .db_session import SqlAlchemyBase
 
 
 class Game(SqlAlchemyBase):
+    """таблица БД для игры"""
     __tablename__ = 'games'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)  # id игры

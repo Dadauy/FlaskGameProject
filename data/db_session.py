@@ -9,12 +9,13 @@ __factory = None
 
 
 def global_init(db_file):
+    """подключение к БД"""
     global __factory
 
     if __factory:
         return
 
-    if not db_file or not db_file.strip():
+    if not db_file or not db_file.strip():  # нет пути до файла
         raise Exception("Необходимо указать файл базы данных.")
 
     conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
