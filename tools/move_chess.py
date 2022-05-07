@@ -38,12 +38,12 @@ def move_chess(doska, gorizont_here, vertical_here, gorizont_there, vertical_the
 
     elif figure[0] == "p":  # пешка
         if figure[1] == "W":
-            if vertical_there - vertical_here == 1:
+            if vertical_there - vertical_here == -1:
                 doska[vertical_there * 8 + gorizont_there] = doska[vertical_here * 8 + gorizont_here]
                 doska[vertical_here * 8 + gorizont_here] = "_"
 
         elif figure[1] == "B":
-            if vertical_there - vertical_here == -1:
+            if vertical_there - vertical_here == 1:
                 doska[vertical_there * 8 + gorizont_there] = doska[vertical_here * 8 + gorizont_here]
                 doska[vertical_here * 8 + gorizont_here] = "_"
 
